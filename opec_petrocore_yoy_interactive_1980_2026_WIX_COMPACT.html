@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OPEC Revenue and Petro-Core Profit Growth Across Oil-Shock Cycles, 1980–2026</title>
+<style>
+:root{--ink:#171717;--muted:#5f6368;--grid:#dedede;--opec:#287fb8;--petro:#f28e2b;--zero:#555}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#fff;color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:6px 12px 5px}
+h1{font-size:21px;line-height:1.12;text-align:center;margin:1px 0 2px;font-weight:700}
+.sub{text-align:center;font-size:12px;color:#555;margin:0 0 3px}
+.controls{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:3px 0 4px;font-size:11.5px}
+.controls label{display:flex;align-items:center;gap:6px;cursor:pointer}
+.chartbox{position:relative;width:100%;height:430px;border:1px solid #eee;background:#fff}
+svg{display:block;width:100%;height:100%;overflow:visible}
+.axis{stroke:#777;stroke-width:1}
+.grid{stroke:var(--grid);stroke-width:1}
+.zero{stroke:var(--zero);stroke-width:1.4}
+.ticktext{fill:#555;font-size:12px}
+.axislabel{fill:#333;font-size:13px;font-weight:600}
+.series{fill:none;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.opec-line{stroke:var(--opec)} .petro-line{stroke:var(--petro)}
+.dot{stroke:#fff;stroke-width:1.2;cursor:pointer}
+.opec-dot{fill:var(--opec)} .petro-dot{fill:var(--petro)}
+.legend{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;font-size:11.5px;margin:1px 0 3px}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.swatch{width:24px;height:3px;border-radius:2px}.swatch.opec{background:var(--opec)}.swatch.petro{background:var(--petro)}
+.tip{position:absolute;z-index:5;pointer-events:none;display:none;max-width:330px;background:rgba(255,255,255,.98);border:1px solid #bbb;border-radius:7px;padding:9px 10px;box-shadow:0 3px 14px rgba(0,0,0,.14);font-size:12px;line-height:1.38}
+.tip strong{font-size:13px}
+.method,.source{font-size:10px;line-height:1.25;margin:4px auto 0;max-width:1120px}
+.source{font-size:9.5px;color:#444}
+.note{text-align:right;color:#666;font-size:9.5px;margin:0 2px 2px}
+@media(max-width:700px){
+ .wrap{padding:10px 8px} h1{font-size:19px}.sub{font-size:12px}
+ .chartbox{height:400px}.method,.source{font-size:11px}.ticktext{font-size:10px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>OPEC Revenue and Petro-Core Profit Growth Across Oil-Shock Cycles, 1980–2026</h1>
+<p class="sub">Year-over-year percentage change calculated from the uploaded annual revenue and profit series</p>
+<div class="controls">
+<label><input id="opecToggle" type="checkbox" checked> OPEC revenue growth</label>
+<label><input id="petroToggle" type="checkbox" checked> Petro-Core profit growth</label>
+<label><input id="zeroToggle" type="checkbox" checked> Zero reference line</label>
+<label><input id="focusToggle" type="checkbox" checked> Focus view (±100%)</label>
+</div>
+<div class="legend">
+<span><i class="swatch opec"></i>OPEC Revenue Growth (%)</span>
+<span><i class="swatch petro"></i>Petro-Core Profit Growth (%)</span>
+</div>
+<p class="note">Interactive: hover or tap a point for values and data-status notes · Focus view clips the display at ±100% without changing the underlying data</p>
+<div class="chartbox" id="chartbox">
+<svg id="chart" role="img" aria-label="Interactive line chart comparing year-over-year OPEC petroleum export revenue growth and Petro-Core net profit proxy growth from 1980 through 2026."></svg>
+<div class="tip" id="tip"></div>
+</div>
+<p class="method"><strong>Method:</strong> YoY growth = ((current-year value − prior-year value) / prior-year value) × 100. Hover or tap a point to view the year, calculated growth rate, underlying level, data status, and dataset note. The first year has no YoY value because no prior-year observation is available in this uploaded series.</p>
+<p class="source"><strong>Source:</strong> Sarmadian (2026), <em>Geopolitical Energy Dataset</em>; author’s compilation, calculations, analysis, and visualization. Underlying OPEC anchors and oil-company benchmarks are documented in the accompanying source dataset, including U.S. EIA, OPEC, Global Witness/Energy Profits, and related cited materials. Values identified in the dataset as estimated, proxy, forecast, or scenario remain so in this visualization. © 2026 Mina Sarmadian. All rights reserved.</p>
+</div>
+<script>
+const rows = [{"year": 1980, "opec": null, "petro": null, "opecLevel": 280.0, "petroLevel": 45.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Iranian Revolution / early Iran-Iraq War; historical reconstruction"}, {"year": 1981, "opec": -7.1, "petro": -15.6, "opecLevel": 260.0, "petroLevel": 38.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Iran-Iraq War; historical reconstruction"}, {"year": 1982, "opec": -15.4, "petro": -26.3, "opecLevel": 220.0, "petroLevel": 28.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Oil demand slowdown; historical reconstruction"}, {"year": 1983, "opec": -18.2, "petro": -14.3, "opecLevel": 180.0, "petroLevel": 24.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Early 1980s oil glut pressure"}, {"year": 1984, "opec": -2.8, "petro": 8.3, "opecLevel": 175.0, "petroLevel": 26.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Tanker War period"}, {"year": 1985, "opec": -5.7, "petro": -7.7, "opecLevel": 165.0, "petroLevel": 24.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Tanker War period"}, {"year": 1986, "opec": -42.4, "petro": -58.3, "opecLevel": 95.0, "petroLevel": 10.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Oil price collapse"}, {"year": 1987, "opec": 21.1, "petro": 60.0, "opecLevel": 115.0, "petroLevel": 16.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Tanker War / Gulf shipping risk"}, {"year": 1988, "opec": -17.4, "petro": 12.5, "opecLevel": 95.0, "petroLevel": 18.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Tanker War ends"}, {"year": 1989, "opec": 15.8, "petro": 11.1, "opecLevel": 110.0, "petroLevel": 20.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Pre-Gulf War"}, {"year": 1990, "opec": 31.8, "petro": 40.0, "opecLevel": 145.0, "petroLevel": 28.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Gulf War shock"}, {"year": 1991, "opec": -13.8, "petro": -17.9, "opecLevel": 125.0, "petroLevel": 23.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Gulf War aftermath"}, {"year": 1992, "opec": -4.0, "petro": -21.7, "opecLevel": 120.0, "petroLevel": 18.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Post-Gulf War"}, {"year": 1993, "opec": -8.3, "petro": -5.6, "opecLevel": 110.0, "petroLevel": 17.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Low oil price period"}, {"year": 1994, "opec": -4.5, "petro": 17.6, "opecLevel": 105.0, "petroLevel": 20.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Low oil price period"}, {"year": 1995, "opec": 9.5, "petro": 15.0, "opecLevel": 115.0, "petroLevel": 23.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Oil recovery"}, {"year": 1996, "opec": 21.7, "petro": 26.1, "opecLevel": 140.0, "petroLevel": 29.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Oil recovery"}, {"year": 1997, "opec": -7.1, "petro": 6.9, "opecLevel": 130.0, "petroLevel": 31.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Pre-Asian financial crisis"}, {"year": 1998, "opec": -34.6, "petro": -35.5, "opecLevel": 85.0, "petroLevel": 20.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Asian financial crisis / oil price collapse"}, {"year": 1999, "opec": 41.2, "petro": 50.0, "opecLevel": 120.0, "petroLevel": 30.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Oil price recovery"}, {"year": 2000, "opec": 87.5, "petro": 86.7, "opecLevel": 225.0, "petroLevel": 56.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "2000s oil cycle begins"}, {"year": 2001, "opec": -15.6, "petro": -14.3, "opecLevel": 190.0, "petroLevel": 48.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "9/11 / demand slowdown"}, {"year": 2002, "opec": 2.6, "petro": -16.7, "opecLevel": 195.0, "petroLevel": 40.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "War on Terror era begins"}, {"year": 2003, "opec": 23.1, "petro": 50.0, "opecLevel": 240.0, "petroLevel": 60.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Iraq War"}, {"year": 2004, "opec": 39.6, "petro": 43.3, "opecLevel": 335.0, "petroLevel": 86.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Commodity supercycle"}, {"year": 2005, "opec": 41.8, "petro": 22.1, "opecLevel": 475.0, "petroLevel": 105.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Commodity supercycle"}, {"year": 2006, "opec": 17.9, "petro": 14.3, "opecLevel": 560.0, "petroLevel": 120.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Commodity supercycle"}, {"year": 2007, "opec": 17.9, "petro": 5.0, "opecLevel": 660.0, "petroLevel": 126.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Pre-financial crisis oil boom"}, {"year": 2008, "opec": 46.4, "petro": 7.1, "opecLevel": 966.0, "petroLevel": 135.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Oil price spike / financial crisis"}, {"year": 2009, "opec": -41.0, "petro": -57.0, "opecLevel": 570.0, "petroLevel": 58.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Global financial crisis aftermath"}, {"year": 2010, "opec": 30.7, "petro": 46.6, "opecLevel": 745.0, "petroLevel": 85.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "Recovery cycle"}, {"year": 2011, "opec": 47.7, "petro": 41.2, "opecLevel": 1100.0, "petroLevel": 120.0, "opecStatus": "Estimated from OPEC/Oil-price cycle", "petroStatus": "Estimated proxy", "notes": "High oil cycle / Arab Spring"}, {"year": 2012, "opec": 9.1, "petro": -4.2, "opecLevel": 1200.0, "petroLevel": 115.0, "opecStatus": "Verified EIA benchmark", "petroStatus": "Estimated proxy", "notes": "EIA describes 2012 as record high near $1.2 trillion"}, {"year": 2013, "opec": -27.1, "petro": -4.3, "opecLevel": 875.0, "petroLevel": 110.0, "opecStatus": "Estimated from EIA decline references", "petroStatus": "Estimated proxy", "notes": "High oil cycle cools"}, {"year": 2014, "opec": -13.9, "petro": -13.6, "opecLevel": 753.0, "petroLevel": 95.0, "opecStatus": "Verified EIA historical figure", "petroStatus": "Estimated proxy", "notes": "EIA 2016 fact sheet says $753B in 2014"}, {"year": 2015, "opec": -46.3, "petro": -60.0, "opecLevel": 404.0, "petroLevel": 38.0, "opecStatus": "Verified EIA historical figure", "petroStatus": "Estimated proxy", "notes": "EIA 2016 fact sheet says $404B in 2015"}, {"year": 2016, "opec": 7.2, "petro": -21.1, "opecLevel": 433.0, "petroLevel": 30.0, "opecStatus": "Verified EIA historical figure", "petroStatus": "Estimated proxy", "notes": "EIA 2017/2018 reporting around 2016 revenues"}, {"year": 2017, "opec": 24.2, "petro": 83.3, "opecLevel": 538.0, "petroLevel": 55.0, "opecStatus": "Verified EIA historical figure", "petroStatus": "Estimated proxy", "notes": "EIA 2019 fact sheet says 2018 rose 32% from $538B in 2017"}, {"year": 2018, "opec": 32.2, "petro": 45.5, "opecLevel": 711.0, "petroLevel": 80.0, "opecStatus": "Verified EIA historical figure", "petroStatus": "Estimated proxy", "notes": "EIA 2019 fact sheet says $711B in 2018"}, {"year": 2019, "opec": -16.3, "petro": -18.8, "opecLevel": 595.0, "petroLevel": 65.0, "opecStatus": "Verified EIA historical figure", "petroStatus": "Estimated proxy", "notes": "EIA 2020 Today in Energy says $595B in 2019"}, {"year": 2020, "opec": -45.7, "petro": -84.6, "opecLevel": 323.0, "petroLevel": 10.0, "opecStatus": "Verified EIA forecast/estimate", "petroStatus": "Estimated proxy", "notes": "EIA 2020 Today in Energy forecast $323B"}, {"year": 2021, "opec": 70.3, "petro": 800.0, "opecLevel": 550.0, "petroLevel": 90.0, "opecStatus": "Estimated from EIA growth relationship", "petroStatus": "Estimated proxy", "notes": "EIA says 2021 revenues rose nearly 70% from 2020"}, {"year": 2022, "opec": 35.6, "petro": 116.7, "opecLevel": 746.0, "petroLevel": 195.0, "opecStatus": "Verified EIA current methodology", "petroStatus": "Verified/compiled supermajor benchmark", "notes": "EIA 2025 fact sheet Table 1; Global Witness/University of Washington cite record supermajor profits"}, {"year": 2023, "opec": -18.9, "petro": -38.5, "opecLevel": 605.0, "petroLevel": 120.0, "opecStatus": "Verified EIA current methodology", "petroStatus": "Estimated proxy", "notes": "EIA 2025 fact sheet Table 1; petro-core estimated from post-2022 profit cycle"}, {"year": 2024, "opec": -9.1, "petro": -15.0, "opecLevel": 550.0, "petroLevel": 102.0, "opecStatus": "Verified EIA current methodology", "petroStatus": "Verified/compiled supermajor benchmark", "notes": "EIA 2025 fact sheet Table 1; Energy Profits reports Big Five oil majors at $102B"}, {"year": 2025, "opec": -17.3, "petro": -51.0, "opecLevel": 455.0, "petroLevel": 50.0, "opecStatus": "EIA forecast", "petroStatus": "Estimated proxy", "notes": "EIA 2025 fact sheet forecast; petro-core estimated"}, {"year": 2026, "opec": -9.9, "petro": 80.0, "opecLevel": 410.0, "petroLevel": 90.0, "opecStatus": "EIA forecast", "petroStatus": "Scenario estimate", "notes": "EIA baseline forecast; petro-core scenario for conflict/Hormuz-risk framing"}];
+
+const svg=document.getElementById("chart"), box=document.getElementById("chartbox"), tip=document.getElementById("tip");
+const opecToggle=document.getElementById("opecToggle"), petroToggle=document.getElementById("petroToggle"), zeroToggle=document.getElementById("zeroToggle"), focusToggle=document.getElementById("focusToggle");
+const NS="http://www.w3.org/2000/svg";
+function E(tag,attrs={},txt=""){const e=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);if(txt)e.textContent=txt;return e}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function showTip(ev,d,which){
+ const growth=which==="opec"?d.opec:d.petro, level=which==="opec"?d.opecLevel:d.petroLevel;
+ const status=which==="opec"?d.opecStatus:d.petroStatus, label=which==="opec"?"OPEC revenue":"Petro-Core profit proxy";
+ tip.innerHTML=`<strong>${d.year}</strong><br>${label} growth: ${growth==null?"N/A":growth.toFixed(1)+"%"}<br>Underlying level: ${level==null?"N/A":"$"+level.toFixed(1)+"bn"}<br>Status: ${esc(status||"Not specified")}${d.notes?"<br>"+esc(d.notes):""}`;
+ tip.style.display="block";
+ const r=box.getBoundingClientRect(), x=(ev.clientX??r.left+r.width/2)-r.left+12, y=(ev.clientY??r.top+r.height/2)-r.top+12;
+ tip.style.left=Math.min(x,r.width-345)+"px"; tip.style.top=Math.min(y,r.height-150)+"px";
+}
+function hideTip(){tip.style.display="none"}
+function draw(){
+ while(svg.firstChild)svg.removeChild(svg.firstChild);
+ const W=Math.max(620,box.clientWidth), H=box.clientHeight, m={l:64,r:38,t:18,b:48}, pw=W-m.l-m.r, ph=H-m.t-m.b;
+ svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+ const defs=E("defs"); const clip=E("clipPath",{id:"plotClip"}); clip.appendChild(E("rect",{x:m.l,y:m.t,width:pw,height:ph})); defs.appendChild(clip); svg.appendChild(defs);
+ const vals=rows.flatMap(d=>[opecToggle.checked?d.opec:null,petroToggle.checked?d.petro:null]).filter(v=>Number.isFinite(v));
+ let ymin, ymax;
+ if(focusToggle.checked){ ymin=-100; ymax=100; }
+ else { ymin=Math.min(-100,...vals); ymax=Math.max(100,...vals); const pad=(ymax-ymin)*.06; ymin-=pad; ymax+=pad; }
+ const x=y=>m.l+(y-1979.5)/(2026.5-1979.5)*pw, yy=v=>m.t+(ymax-v)/(ymax-ymin)*ph;
+ const ystep=(ymax-ymin>700?200:ymax-ymin>350?100:50);
+ const y0=Math.floor(ymin/ystep)*ystep, y1=Math.ceil(ymax/ystep)*ystep;
+ for(let v=y0;v<=y1;v+=ystep){const Y=yy(v);svg.appendChild(E("line",{x1:m.l,y1:Y,x2:W-m.r,y2:Y,class:v===0&&zeroToggle.checked?"zero":"grid"}));svg.appendChild(E("text",{x:m.l-10,y:Y+4,"text-anchor":"end",class:"ticktext"},String(v)))}
+ for(let yr=1980;yr<=2025;yr+=5){const X=x(yr);svg.appendChild(E("line",{x1:X,y1:m.t,x2:X,y2:H-m.b,class:"grid"}));svg.appendChild(E("text",{x:X,y:H-m.b+22,"text-anchor":"middle",class:"ticktext"},String(yr)))}
+ svg.appendChild(E("line",{x1:m.l,y1:H-m.b,x2:W-m.r,y2:H-m.b,class:"axis"}));svg.appendChild(E("line",{x1:m.l,y1:m.t,x2:m.l,y2:H-m.b,class:"axis"}));
+ svg.appendChild(E("text",{x:m.l+pw/2,y:H-12,"text-anchor":"middle",class:"axislabel"},"Year"));
+ const yl=E("text",{x:18,y:m.t+ph/2,"text-anchor":"middle",class:"axislabel",transform:`rotate(-90 18 ${m.t+ph/2})`},"Year-over-year growth (%)");svg.appendChild(yl);
+ function series(key,klass,dotklass){
+  const valid=rows.filter(d=>Number.isFinite(d[key]));
+  if(!valid.length)return;
+  const g=E("g",{"clip-path":"url(#plotClip)"});
+  let path="", pen=false;
+  valid.forEach(d=>{
+    const inRange=d[key]>=ymin && d[key]<=ymax;
+    if(inRange){path+=(pen?"L":"M")+x(d.year)+" "+yy(d[key])+" "; pen=true;} else {pen=false;}
+  });
+  if(path) g.appendChild(E("path",{d:path.trim(),class:`series ${klass}`}));
+  valid.forEach(d=>{
+    const raw=d[key], clipped=Math.max(ymin,Math.min(ymax,raw));
+    if(raw<ymin || raw>ymax){
+      if(focusToggle.checked){
+        const cy=raw>ymax?m.t+7:H-m.b-7;
+        const c=E("circle",{cx:x(d.year),cy:cy,r:5.2,class:`dot ${dotklass}`,tabindex:"0"});
+        c.addEventListener("mousemove",ev=>showTip(ev,d,key)); c.addEventListener("mouseenter",ev=>showTip(ev,d,key)); c.addEventListener("mouseleave",hideTip);
+        c.addEventListener("click",ev=>showTip(ev,d,key)); g.appendChild(c);
+        // Exact clipped values remain available in the hover/tap tooltip.
+        // No inline label here, preventing adjacent outlier labels from overlapping.
+      }
+      return;
+    }
+    const c=E("circle",{cx:x(d.year),cy:yy(raw),r:4.3,class:`dot ${dotklass}`,tabindex:"0"});
+    c.addEventListener("mousemove",ev=>showTip(ev,d,key));c.addEventListener("mouseenter",ev=>showTip(ev,d,key));c.addEventListener("mouseleave",hideTip);
+    c.addEventListener("click",ev=>showTip(ev,d,key));c.addEventListener("focus",()=>{const r=box.getBoundingClientRect();showTip({clientX:r.left+x(d.year),clientY:r.top+yy(raw)},d,key)});
+    c.addEventListener("blur",hideTip);g.appendChild(c);
+  });
+  svg.appendChild(g);
+ }
+ if(opecToggle.checked)series("opec","opec-line","opec-dot");
+ if(petroToggle.checked)series("petro","petro-line","petro-dot");
+ if(focusToggle.checked){
+   const note=E("text",{x:W-m.r,y:m.t+17,"text-anchor":"end",class:"ticktext"},"Values beyond ±100% are clipped · hover/tap for exact value");
+   svg.appendChild(note);
+ }
+}
+[opecToggle,petroToggle,zeroToggle,focusToggle].forEach(el=>el.addEventListener("change",draw));
+window.addEventListener("resize",draw);
+document.addEventListener("click",e=>{if(!e.target.classList.contains("dot"))hideTip()});
+draw();
+</script>
+</body>
+</html>
